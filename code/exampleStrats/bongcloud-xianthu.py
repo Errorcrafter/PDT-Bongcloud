@@ -16,7 +16,8 @@ def noise(choice,observations:int): # add additional randomness to screw with pe
     try:
         weighting = int(observations) / 7
     except Exception as e:
-        return f"ERROR: {str(e)}"
+        print(f"ERROR: {str(e)}")
+        return 0
     
     weighting = round(weighting, 3)
 
