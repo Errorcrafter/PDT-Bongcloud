@@ -1,4 +1,4 @@
-# SkidStrat by Xianthu
+# SkidStrat by Xianthu (macpherson#1415)
 # Bongcloud is horribly broken, so why not make a new one!
 # Unholy abomination of a bunch of well-performing strats.
 # Creds to the CaryKH's Prisoner Dilemma Project Discord server where I skidded most of this from 😎😎😎
@@ -15,7 +15,7 @@ def strategy(history,memory):
         memory = [None,  # stores strat name (0)
                   None,  # grim's memory     (1)
                   None]  # gmtft's memory    (2)
-        memory[0] = r.choice(["GRIM","GTFT","RNG","JOSS","DYNJOSS+","JOSS+"])
+        memory[0] = r.choice(["GRIM","GTFT","RNG","JOSS","DYNJOSS+","JOSS+","BAL"])
 
 
     if memory[0] == "GRIM":  # GrimTrigger strat in examples.
@@ -98,6 +98,14 @@ def strategy(history,memory):
                 choice = 1
                 if r.random() < 0.10:
                     choice = 0
+
+
+    elif memory[0] == "BAL":
+        choice = 1
+        if history.shape[1] != 0:
+            percents = np.mean(history, axis=1)
+            if percents[0] > percents[1] + 0.1:
+                choice = 0
 
 
     else:
