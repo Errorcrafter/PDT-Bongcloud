@@ -10,7 +10,7 @@ def strategy(history,memory):
         memory = None
 
     if memory is None:  # assign a random strat, if none was assigned
-        memory = []
+        memory = [None,None,None]
         memory[0] = r.choice(["GRIM","TFT","DETECT","RNG","JOSS","AGGRO_JOSS","JOSS+"])
 
 
@@ -87,3 +87,10 @@ def strategy(history,memory):
                 choice = 1
                 if r.random() < 0.10:
                     choice = 0
+
+
+    else:
+        choice = 0
+
+    
+    return choice,memory
