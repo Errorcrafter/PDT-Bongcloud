@@ -6,12 +6,12 @@ import numpy as np
 
 def strategy(history,memory):
 
-    if history.shape[1] % 10 == 0: # reset memory every 10 turns
+    if history.shape[1] % 18 == 0: # reset memory every 10 turns
         memory = None
 
     if memory is None:  # assign a random strat, if none was assigned
         memory = [None,None,None]
-        memory[0] = r.choice(["GRIM","TFT","DETECT","RNG","JOSS","AGGRO_JOSS","JOSS+"])
+        memory[0] = r.choice(["GRIM","TFT","RNG","JOSS","DYNJOSS+","JOSS+"])
 
 
     if memory[0] == "GRIM":  # GrimTrigger strat in examples.
@@ -38,33 +38,13 @@ def strategy(history,memory):
             choice = 0
 
 
-    elif memory[0] == "DETECT":  # Detective strat from examples
-        testingSchedule = [1,0,1,1]
-        gameLength = history.shape[1]
-        shallIExploit = memory[2] # detective's memory is stored in memory[2]
+    elif memory[0] == "RNG":  # Chooses randomly from opponent's moves https://discord.com/channels/844706669455343616/844759135190515762/844887717091344406
         choice = None
-        
-        if gameLength < 4: # We're still in that initial testing stage.
-            choice = testingSchedule[gameLength]
-        elif gameLength == 4: # Time to analyze the testing stage and decide what to do based on what the opponent did in that time!
-            opponentsActions = history[1]
-            if np.count_nonzero(opponentsActions-1) == 0: # The opponent cooperated all 4 turns! Never defected!
-                shallIExploit = True # Let's exploit forever.
-            else:
-                shallIExploit = False # Let's switch to Tit For Tat.
-        
-        if gameLength >= 4:
-            if shallIExploit:
-                choice = 0
-            else:
-                choice = history[1,-1] # Do Tit for Tat
-        
-        #return choice, shallIExploit
-        memory[2] = shallIExploit
-
-
-    elif memory[0] == "RNG":  # Random
-        choice = r.choice([0,1])
+        if history.shape[1] == 0:
+            choice = 0
+        else:
+            
+            choice = r.choice(history[1])
 
 
     elif memory[0] == "JOSS":  # Joss strat from examples
@@ -73,10 +53,16 @@ def strategy(history,memory):
             choice = 0
 
     
-    elif memory[0] == "AGGRO_JOSS":  # Joss strat, but more agressive
+    elif memory[0] == "DYNJOSS+":  # Joss strat, but more agressive by valadaptive https://github.com/Prisoners-Dilemma-Enjoyers/PrisonersDilemmaTournament/blob/main/code/valadaptive/antijossDynamic.py
+        #if threshold is None:
+        threshold = 0.1
         choice = 1
-        if r.random() < 0.30 or (history.shape[1] >= 1 and history[1,-1] == 0):
+        if history.shape[1] >= 1 and history[1, -1] == 0:
             choice = 0
+            if r.random() < 0.10:
+                choice = 1
+
+        threshold += sum(history[1, -3:]) * 0.0125
 
     
     elif memory[0] == "JOSS+":  # AntiAntiJoss by nekiwo https://github.com/Prisoners-Dilemma-Enjoyers/PrisonersDilemmaTournament/blob/main/code/nekiwo/antiAntiJoss.py
