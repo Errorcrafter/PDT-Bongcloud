@@ -7,7 +7,7 @@ import numpy as np
 # DETECTIVE: First: I analyze you. I start:
 # Cooperate, Cheat, Cooperate, Cooperate.
 # If you cheat back, I'll act like [Tit for Tat].
-# If you never cheta back, I'll act like [alwaysDefect],
+# If you never cheat back, I'll act like [alwaysDefect],
 # to exploit you. Elementary, my dear Watson.
 
 def strategy(history, memory):
