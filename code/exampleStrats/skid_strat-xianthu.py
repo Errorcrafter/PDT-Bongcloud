@@ -8,7 +8,9 @@ import numpy as np
 
 def strategy(history,memory):
 
-    if history.shape[1] % 18 == 0: # resets memory to use a new strat
+    game_ln = history.shape[1]
+
+    if game_ln % 15 == 0: # resets memory to use a new strat
         memory = None
 
     if memory is None:  # assign a random strat, if none was assigned
@@ -23,7 +25,7 @@ def strategy(history,memory):
         if memory[1] is not None and memory[1]: # Has memory that it was already wronged.
             wronged = True
         else: # Has not been wronged yet, historically.
-            if history.shape[1] >= 1 and history[1,-1] == 0: # Just got wronged.
+            if game_ln >= 1 and history[1,-1] == 0: # Just got wronged.
                 wronged = True
         
         if wronged:
@@ -45,10 +47,10 @@ def strategy(history,memory):
         if memory[2] is not None and memory[2][1] >= 5:
             return 0, (True, 4)
 
-        num_rounds = history.shape[1]
-        opponents_last_move = history[1, -1] if num_rounds >= 1 else 1
-        opponents_second_last_move = history[1, -2] if num_rounds >= 2 else 1
-        our_second_last_move = history[0, -2] if num_rounds >= 2 else 1
+        #num_rounds = game_ln
+        opponents_last_move = history[1, -1] if game_ln >= 1 else 1
+        opponents_second_last_move = history[1, -2] if game_ln >= 2 else 1
+        our_second_last_move = history[0, -2] if game_ln >= 2 else 1
         choice = (
             1
             if (
@@ -65,7 +67,7 @@ def strategy(history,memory):
 
     elif memory[0] == "RNG":  # Chooses randomly from opponent's moves https://discord.com/channels/844706669455343616/844759135190515762/844887717091344406
         choice = None
-        if history.shape[1] == 0:
+        if game_ln == 0:
             choice = 0
         else:
             
@@ -74,7 +76,7 @@ def strategy(history,memory):
 
     elif memory[0] == "JOSS":  # Joss strat from examples
         choice = 1
-        if r.random() < 0.10 or (history.shape[1] >= 1 and history[1,-1] == 0):
+        if r.random() < 0.10 or (game_ln >= 1 and history[1,-1] == 0):
             choice = 0
 
     
@@ -82,7 +84,7 @@ def strategy(history,memory):
         #if threshold is None:
         threshold = 0.1
         choice = 1
-        if history.shape[1] >= 1 and history[1, -1] == 0:
+        if game_ln >= 1 and history[1, -1] == 0:
             choice = 0
             if r.random() < 0.10:
                 choice = 1
@@ -92,7 +94,7 @@ def strategy(history,memory):
     
     elif memory[0] == "JOSS+":  # AntiAntiJoss by nekiwo https://github.com/Prisoners-Dilemma-Enjoyers/PrisonersDilemmaTournament/blob/main/code/nekiwo/antiAntiJoss.py
         choice = 1
-        if history.shape[1] >= 1 and history[1, -1] == 0:
+        if game_ln >= 1 and history[1, -1] == 0:
             choice = 0
             if r.random() < 0.10:
                 choice = 1
@@ -100,16 +102,26 @@ def strategy(history,memory):
                     choice = 0
 
 
-    elif memory[0] == "BAL":
+    elif memory[0] == "BAL":  # Balance by Saffron https://github.com/Prisoners-Dilemma-Enjoyers/PrisonersDilemmaTournament/blob/main/code/saffron/balance.py
         choice = 1
-        if history.shape[1] != 0:
+        if game_ln != 0:
             percents = np.mean(history, axis=1)
             if percents[0] > percents[1] + 0.1:
                 choice = 0
 
 
-    else:
+    else:  # if the code does le epic crew up just defect
         choice = 0
+
+
+    if game_ln > 4:  # checks the prev 4 moves to see if its been complying so far
+        recent_moves = history[1,(game_ln-4):game_ln]
+        dict(
+            zip(*np.unique(recent_moves, return_counts=True))
+        )
+        num_defections = recent_moves.get(0, 0)
+        if num_defections <= 1:  # if 1 defections or less, exploit!
+            choice = 0
 
     
     return choice,memory
