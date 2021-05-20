@@ -1,4 +1,4 @@
-# Split Personality by Xianthu
+# SkidStrat by Xianthu
 # Bongcloud is horribly broken, so why not make a new one!
 
 import random as r
