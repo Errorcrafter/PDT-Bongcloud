@@ -38,10 +38,10 @@ def strategy(history,memory):
     choice = None
     obvs = None
 
-    if game_length > 7: # observe the opponent's actions, choose randomly
+    if game_length <= 7 : # observe the opponent's actions, choose randomly
         choice = random.randint(0,1)
 
-    elif game_length > 20: # after observations, phase 1 - pseudo-random (prolly broken)
+    elif game_length <= 21: # after observations, phase 1 - pseudo-random (prolly broken)
         opponent = history[1]
         obvs = np.count_nonzero(opponent-1)
         if obvs > 5: # low rate of cooperation
@@ -51,10 +51,20 @@ def strategy(history,memory):
         else: # very high rate of cooperation, EXPLOIT TIME!!!!!
             choice = 0
 
-    elif game_length > 40: # phase 2 - grimTrigger?
-        pass
+    elif game_length <= 36: # phase 2 - grimTrigger?
+        wronged = False
+        if memory is not None and memory: # Has memory that it was already wronged.
+            wronged = True
+        else: # Has not been wronged yet, historically.
+            if history.shape[1] >= 1 and history[1,-1] == 0: # Just got wronged.
+                wronged = True
+    
+        if wronged:
+            choice,memory = 0,True
+        else:
+            choice,memory = 1,False
 
     else: # final phase - always defect
-        pass
+        choice = 0
 
     return noise(choice,obvs),memory
