@@ -1,17 +1,21 @@
 # SkidStrat by Xianthu
 # Bongcloud is horribly broken, so why not make a new one!
+# Unholy abomination of a bunch of well-performing strats.
+# Creds to the CaryKH's Prisoner Dilemma Project Discord server where I skidded most of this from 😎😎😎
 
 import random as r
 import numpy as np
 
 def strategy(history,memory):
 
-    if history.shape[1] % 18 == 0: # reset memory every 10 turns
+    if history.shape[1] % 18 == 0: # resets memory to use a new strat
         memory = None
 
     if memory is None:  # assign a random strat, if none was assigned
-        memory = [None,None,None]
-        memory[0] = r.choice(["GRIM","TFT","RNG","JOSS","DYNJOSS+","JOSS+"])
+        memory = [None,  # stores strat name (0)
+                  None,  # grim's memory     (1)
+                  None]  # gmtft's memory    (2)
+        memory[0] = r.choice(["GRIM","GTFT","RNG","JOSS","DYNJOSS+","JOSS+"])
 
 
     if memory[0] == "GRIM":  # GrimTrigger strat in examples.
@@ -32,10 +36,31 @@ def strategy(history,memory):
             memory[1] = False
 
 
-    elif memory[0] == "TFT":  # Forgiving Tit For Tat strat from examples
-        choice = 1
-        if history.shape[1] >= 2 and history[1,-1] == 0 and history[1,-2] == 0: # forgiving tft go brrrrrrrr
-            choice = 0
+    elif memory[0] == "GTFT":  # Relaxed Grim Moral TFT by EFHIII(?) https://github.com/Prisoners-Dilemma-Enjoyers/PrisonersDilemmaTournament/blob/main/code/misc/relaxedGrimMoralTitForTat.py
+        if memory[2] is not None and memory[2][0] is True:
+            remainingPunishments = memory[1] - 1
+            punishMode = remainingPunishments > 0
+            return 0, (punishMode, remainingPunishments)
+
+        if memory[2] is not None and memory[2][1] >= 5:
+            return 0, (True, 4)
+
+        num_rounds = history.shape[1]
+        opponents_last_move = history[1, -1] if num_rounds >= 1 else 1
+        opponents_second_last_move = history[1, -2] if num_rounds >= 2 else 1
+        our_second_last_move = history[0, -2] if num_rounds >= 2 else 1
+        choice = (
+            1
+            if (
+                opponents_last_move == 1
+                or (our_second_last_move == 0 and opponents_second_last_move == 1)
+            )
+            else 0
+        )
+        if choice == 0:
+            memory[2] = (False, 1) if memory[2] is None else (False, memory[2][1] + 1)
+
+        #return choice, memory
 
 
     elif memory[0] == "RNG":  # Chooses randomly from opponent's moves https://discord.com/channels/844706669455343616/844759135190515762/844887717091344406
