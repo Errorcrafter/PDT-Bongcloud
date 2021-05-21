@@ -10,7 +10,7 @@ def strategy(history,memory):
 
     game_ln = history.shape[1]
 
-    if game_ln % 15 == 0: # resets memory to use a new strat
+    if game_ln % 20 == 0: # resets memory to use a new strat
         memory = None
 
     if memory is None:  # assign a random strat, if none was assigned
@@ -114,14 +114,10 @@ def strategy(history,memory):
         choice = 0
 
 
-    if game_ln > 4:  # checks the prev 4 moves to see if its been complying so far
-        recent_moves = history[1,(game_ln-4):game_ln]
-        dict(
-            zip(*np.unique(recent_moves, return_counts=True))
-        )
-        num_defections = recent_moves.get(0, 0)
-        if num_defections <= 1:  # if 1 defections or less, exploit!
-            choice = 0
+    if game_ln > 4:  # checks the prev 4 moves to see if its been doing the same thing for a long time
+        if history[1,-4] == history[1,-3] == history[1,-2] == history[1,-1]:
+            choice = 0  # defect just in case
+
 
     
     return choice,memory
