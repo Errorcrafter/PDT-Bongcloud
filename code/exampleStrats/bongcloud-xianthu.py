@@ -39,10 +39,10 @@ def strategy(history,memory):
     choice = None
     obvs = None
 
-    if game_length <= 5 : # observe the opponent's actions, choose randomly
+    if game_length <= 10 : # observe the opponent's actions, choose randomly
         choice = random.randint(0,1)
 
-    elif game_length <= 21: # after observations, phase 1 - pseudo-random (prolly broken)
+    elif game_length <= 75: # after observations, phase 1 - pseudo-random (prolly broken)
         opponent = history[1]
         obvs = np.count_nonzero(opponent-1)
         if obvs >= 4: # low rate of cooperation
@@ -57,8 +57,11 @@ def strategy(history,memory):
 
         memory = None
 
-    elif game_length <= 45: # phase 2 - grimTrigger?
-        wronged = False
+    elif game_length <= 185: # phase 2 - grimTrigger?
+        if history[1,-1] == 1:
+            wronged = False
+        else:
+            wronged = True
         if memory is not None and memory: # Has memory that it was already wronged.
             wronged = True
         else: # Has not been wronged yet, historically.

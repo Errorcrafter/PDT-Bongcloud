@@ -68,7 +68,7 @@ def strategy(history,memory):
     elif memory[0] == "RNG":  # Chooses randomly from opponent's moves https://discord.com/channels/844706669455343616/844759135190515762/844887717091344406
         choice = None
         if game_ln == 0:
-            choice = 0
+            choice = 1
         else:
             
             choice = r.choice(history[1])
@@ -114,9 +114,9 @@ def strategy(history,memory):
         choice = 0
 
 
-    if game_ln > 4:  # checks the prev 4 moves to see if its been doing the same thing for a long time
-        if history[1,-4] == history[1,-3] == history[1,-2] == history[1,-1]:
-            choice = 0  # defect just in case
+    # if game_ln > 4:  # checks the prev 4 moves to see if its been doing the same thing for a long time
+    #     if history[1,-4] == history[1,-3] == history[1,-2] == history[1,-1]:
+    #         choice = 0  # defect just in case
 
 
     
