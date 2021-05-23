@@ -1,4 +1,4 @@
-# SkidV2 by Xianthu (macpherson#1415)
+# SmoothBrain by Xianthu (macpherson#1415)
 
 import random
 
