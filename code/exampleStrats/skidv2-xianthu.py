@@ -10,12 +10,14 @@ def strategy(history,memory):
         punish_timer = 0        # will be saved in memory[1]
         punish_threshold = 3    # will be saved in memory[2]
         punish_duration = 3     # will be saved in memory[3]
-        memory = [defect_count,punish_timer,punish_threshold,punish_duration]
+        is_punishing = False    # will be saved in memory[4]
+        memory = [defect_count,punish_timer,punish_threshold,punish_duration,is_punishing]
     else:
         defect_count = memory[0]
         punish_timer = memory[1]
         punish_threshold = memory[2]
         punish_duration = memory[3]
+        is_punishing = memory[4]
 
     if game_ln == 0:  # always comply on the first turn
         choice = 1
@@ -33,19 +35,22 @@ def strategy(history,memory):
             if defect_count >= punish_threshold and punish_timer < 1:  # start punishing them
                 #print("c")
                 punish_timer = punish_duration
+                is_punishing = True
                 choice = 0
 
+        if is_punishing == True:
             if punish_timer > 1:
                 #print("dd")
                 choice = 0  # defect go brrrr
             elif punish_timer == 1:
                 #print("e")
                 choice = 0
+                is_punishing = False
                 if random.randint(0,1) > 0:  # 1 in 2 chance of becoming angrier
                     punish_duration += 1
                     punish_threshold -= 1
             else:
                 pass
 
-    return choice, [defect_count,punish_timer,punish_threshold,punish_duration]
+    return choice, [defect_count,punish_timer,punish_threshold,punish_duration,is_punishing]
             
